@@ -1,6 +1,7 @@
 package br.com.caelum.leilao.dominio.servico;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ public class AvaliadorTest {
 		rafael = new Usuario("Rafael");
 		carlos = new Usuario("Carlos");
 		thais = new Usuario("Thais");
+		
 	}
 
 	@Test
@@ -99,14 +101,14 @@ public class AvaliadorTest {
 		assertEquals(400, leiloeiro.getValorMedio(), 0.00001);
 	}
 	
-	@Test
+	@Test()
 	public void calculaValorMedioZeroLance() {
 		
 		Leilao leilao = new CriadorDeLeilao().para("Smart TV LG 40").constroi();
 		
-		leiloeiro.avalia(leilao);
+		Exception exception = assertThrows(RuntimeException.class, () -> leiloeiro.avalia(leilao));
 		
-		assertEquals(0, leiloeiro.getValorMedio(), 0.00001);
+		assertEquals("Não é possível avaliar um leilão sem lances!", exception.getMessage());
 	}
 	
 	@Test
@@ -164,9 +166,9 @@ public class AvaliadorTest {
 		Leilao leilao = new CriadorDeLeilao().para("Geladeira")
 				.constroi();
 
-		leiloeiro.avalia(leilao);
+		Exception exception = assertThrows(RuntimeException.class, () -> leiloeiro.avalia(leilao));
 
-		assertEquals(0, leiloeiro.getTresMaiores().size());
+		assertEquals("Não é possível avaliar um leilão sem lances!", exception.getMessage());
 	}
 	
 }
