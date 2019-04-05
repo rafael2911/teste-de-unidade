@@ -40,7 +40,7 @@ public class LeilaoTeste {
 	}
 	
 	@Test
-	public void naoDeveAceitarLancesDuplicados() {
+	public void naoDeveAceitarLancesConsecutivoDoMesmoUsuario() {
 		
 		Leilao leilao = new Leilao("Cafeteira");
 		Usuario rafael = new Usuario("Rafael");
@@ -82,6 +82,74 @@ public class LeilaoTeste {
 		assertEquals(10, leilao.getLances().size());
 		assertEquals(3999.0, leilao.getLances().get(leilao.getLances().size()-1).getValor(), 0.00001);
 		
+	}
+	
+	@Test
+	public void testaLanceDobrado() {
+		Leilao leilao = new Leilao("Fogão 6 bocas");
+		
+		Usuario rafael = new Usuario("Rafael");
+		Usuario carlos = new Usuario("Carlos");
+		
+		leilao.propoe(new Lance(rafael, 200.0));
+		leilao.propoe(new Lance(carlos, 300.0));
+		leilao.dobraLance(rafael);
+		
+		assertEquals(3, leilao.getLances().size());
+		assertEquals(400.0, leilao.getLances().get(leilao.getLances().size()-1).getValor(), 0.00001);
+	}
+	
+	@Test
+	public void naoDeveDobrarCasoNaoHajaLanceAnterior() {
+		Leilao leilao = new Leilao("Balcao");
+		
+		Usuario rafael = new Usuario("Rafael");
+		
+		leilao.dobraLance(rafael);
+		
+		assertEquals(0, leilao.getLances().size());
+	}
+	
+	@Test
+	public void naoDeveDobrarCasoJaTenha5Lances() {
+		Leilao leilao = new Leilao("Notebook Dell");
+		
+		Usuario rafael = new Usuario("Rafael");
+		Usuario carlos = new Usuario("Carlos");
+		
+		leilao.propoe(new Lance(rafael, 2000.0));
+		leilao.propoe(new Lance(carlos, 1800.0));
+		
+		leilao.propoe(new Lance(rafael, 2500.0));
+		leilao.propoe(new Lance(carlos, 3000.0));
+		
+		leilao.propoe(new Lance(rafael, 2900.0));
+		leilao.propoe(new Lance(carlos, 3200.0));
+		
+		leilao.propoe(new Lance(rafael, 3250.0));
+		leilao.propoe(new Lance(carlos, 3300.0));
+		
+		leilao.propoe(new Lance(rafael, 4000.0));
+		leilao.propoe(new Lance(carlos, 3999.0));
+		
+		// esse lance devera ser desconsiderado
+		leilao.dobraLance(rafael);
+		
+		assertEquals(10, leilao.getLances().size());
+		assertEquals(3999.0, leilao.getLances().get(leilao.getLances().size()-1).getValor(), 0.00001);
+	}
+	
+	@Test
+	public void naoDeveDobrarLanceConsecutivoDoMesmoUsuario() {
+		Leilao leilao = new Leilao("Gol G7");
+		
+		Usuario rafael = new Usuario("Rafael");
+		
+		leilao.propoe(new Lance(rafael, 500.0));
+		leilao.dobraLance(rafael);
+		
+		assertEquals(1, leilao.getLances().size());
+		assertEquals(500.0, leilao.getLances().get(0).getValor(), 0.00001);
 	}
 	
 }

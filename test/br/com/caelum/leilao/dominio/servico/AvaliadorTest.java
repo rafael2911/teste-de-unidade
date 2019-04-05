@@ -2,31 +2,41 @@ package br.com.caelum.leilao.dominio.servico;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import br.com.caelum.leilao.dominio.Lance;
 import br.com.caelum.leilao.dominio.Leilao;
 import br.com.caelum.leilao.dominio.Usuario;
+import br.com.caelum.leilao.dominio.builder.CriadorDeLeilao;
 
 public class AvaliadorTest {
 	
+	private Avaliador leiloeiro;
+	private Usuario rafael;
+	private Usuario carlos;
+	private Usuario thais;
+	
+	@BeforeEach
+	private void criaAvaliador() {
+		leiloeiro = new Avaliador();
+		
+		rafael = new Usuario("Rafael");
+		carlos = new Usuario("Carlos");
+		thais = new Usuario("Thais");
+	}
+
 	@Test
 	public void avaliaMaiorEMenorLanceCrescente() {
 		
-		Usuario rafael = new Usuario("Rafael");
-		Usuario carlos = new Usuario("Carlos");
-		Usuario thais = new Usuario("Thais");
-		
-		Leilao leilao = new Leilao("Smart TV LG 40");
-		
-		leilao.propoe(new Lance(rafael, 250));
-		leilao.propoe(new Lance(carlos, 300));
-		leilao.propoe(new Lance(thais, 400));
+		Leilao leilao = new CriadorDeLeilao().para("Smart TV LG 40")
+				.lance(rafael, 250)
+				.lance(carlos, 300)
+				.lance(thais, 400)
+				.constroi();
 		
 		double maiorLance = 400;
 		double menorLance = 250;
 		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		assertEquals(maiorLance, leiloeiro.getMaiorLance(), 0.00001);
@@ -37,20 +47,15 @@ public class AvaliadorTest {
 	@Test
 	public void avaliaMaiorEMenorLanceDecrescente() {
 		
-		Usuario rafael = new Usuario("Rafael");
-		Usuario carlos = new Usuario("Carlos");
-		Usuario thais = new Usuario("Thais");
-		
-		Leilao leilao = new Leilao("Smart TV LG 40");
-		
-		leilao.propoe(new Lance(rafael, 400));
-		leilao.propoe(new Lance(carlos, 300));
-		leilao.propoe(new Lance(thais, 250));
+		Leilao leilao = new CriadorDeLeilao().para("Smart TV LG 40")
+				.lance(rafael, 400)
+				.lance(carlos, 300)
+				.lance(thais, 250)
+				.constroi();
 		
 		double maiorLance = 400;
 		double menorLance = 250;
 		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		assertEquals(maiorLance, leiloeiro.getMaiorLance(), 0.00001);
@@ -61,23 +66,18 @@ public class AvaliadorTest {
 	@Test
 	public void avaliaMaiorEMenorLanceAleatorio() {
 		
-		Usuario rafael = new Usuario("Rafael");
-		Usuario carlos = new Usuario("Carlos");
-		Usuario thais = new Usuario("Thais");
+		Leilao leilao = new CriadorDeLeilao().para("Smart TV LG 40")
+				.lance(rafael, 200)
+				.lance(carlos, 450)
+				.lance(thais, 120)
+				.lance(thais, 700)
+				.lance(thais, 630)
+				.lance(thais, 230)
+				.constroi();
 		
-		Leilao leilao = new Leilao("Smart TV LG 40");
-		
-		leilao.propoe(new Lance(rafael, 200));
-		leilao.propoe(new Lance(carlos, 450));
-		leilao.propoe(new Lance(thais, 120));
-		leilao.propoe(new Lance(thais, 700));
-		leilao.propoe(new Lance(thais, 630));
-		leilao.propoe(new Lance(thais, 230));
-		
-		double maiorLance = 700;
+		double maiorLance = 450;
 		double menorLance = 120;
 		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		assertEquals(maiorLance, leiloeiro.getMaiorLance(), 0.00001);
@@ -87,17 +87,13 @@ public class AvaliadorTest {
 	
 	@Test
 	public void calculaValorMedio() {
-		Usuario rafael = new Usuario("Rafael");
-		Usuario carlos = new Usuario("Carlos");
-		Usuario thais = new Usuario("Thais");
 		
-		Leilao leilao = new Leilao("Smart TV LG 40");
+		Leilao leilao = new CriadorDeLeilao().para("Smart TV LG 40")
+				.lance(rafael, 500)
+				.lance(carlos, 300)
+				.lance(thais, 400)
+				.constroi();
 		
-		leilao.propoe(new Lance(rafael, 500));
-		leilao.propoe(new Lance(carlos, 300));
-		leilao.propoe(new Lance(thais, 400));
-		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		assertEquals(400, leiloeiro.getValorMedio(), 0.00001);
@@ -106,9 +102,8 @@ public class AvaliadorTest {
 	@Test
 	public void calculaValorMedioZeroLance() {
 		
-		Leilao leilao = new Leilao("Smart TV LG 40");
+		Leilao leilao = new CriadorDeLeilao().para("Smart TV LG 40").constroi();
 		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		assertEquals(0, leiloeiro.getValorMedio(), 0.00001);
@@ -117,12 +112,10 @@ public class AvaliadorTest {
 	@Test
 	public void deveEntenderLeilaoComApenasUmLance() {
 		
-		Usuario rafael = new Usuario("Rafael");
+		Leilao leilao = new CriadorDeLeilao().para("Smartphone")
+				.lance(rafael, 600.0)
+				.constroi();
 		
-		Leilao leilao = new Leilao("Smartphone");
-		leilao.propoe(new Lance(rafael, 600.0));
-		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		assertEquals(600, leiloeiro.getMaiorLance(), 0.00001);
@@ -132,17 +125,15 @@ public class AvaliadorTest {
 	
 	@Test
 	public void deveEncontrarOsTresMaioresLances() {
-		Usuario rafael = new Usuario("Rafael");
-		Usuario carlos = new Usuario("Carlos");
 		
-		Leilao leilao = new Leilao("Geladeira");
-		leilao.propoe(new Lance(rafael, 300.0));
-		leilao.propoe(new Lance(carlos, 800.0));
-		leilao.propoe(new Lance(rafael, 250.0));
-		leilao.propoe(new Lance(carlos, 850.0));
-		leilao.propoe(new Lance(rafael, 999.0));
+		Leilao leilao = new CriadorDeLeilao().para("Geladeira")
+				.lance(rafael, 300.0)
+				.lance(carlos, 800.0)
+				.lance(rafael, 250.0)
+				.lance(carlos, 850.0)
+				.lance(rafael, 999.0)
+				.constroi();
 		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		assertEquals(3, leiloeiro.getTresMaiores().size());
@@ -153,15 +144,13 @@ public class AvaliadorTest {
 	
 	@Test
 	public void deveEncontrarOsTresMaioresLancesCom2Elementos() {
-		Usuario rafael = new Usuario("Rafael");
-		Usuario carlos = new Usuario("Carlos");
 		
-		Leilao leilao = new Leilao("Geladeira");
-		leilao.propoe(new Lance(rafael, 300.0));
-		leilao.propoe(new Lance(carlos, 800.0));
+		Leilao leilao = new CriadorDeLeilao().para("Geladeira")
+				.lance(rafael, 300.0)
+				.lance(carlos, 800.0)
+				.constroi();
 
 		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		assertEquals(2, leiloeiro.getTresMaiores().size());
@@ -172,10 +161,9 @@ public class AvaliadorTest {
 	@Test
 	public void deveEncontrarOsTresMaioresLancesComListaVazia() {
 		
-		Leilao leilao = new Leilao("Geladeira");
+		Leilao leilao = new CriadorDeLeilao().para("Geladeira")
+				.constroi();
 
-		
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 
 		assertEquals(0, leiloeiro.getTresMaiores().size());
