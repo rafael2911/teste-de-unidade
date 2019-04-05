@@ -2,10 +2,13 @@ package br.com.caelum.leilao.dominio.servico;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import br.com.caelum.leilao.dominio.Lance;
 import br.com.caelum.leilao.dominio.Leilao;
 import br.com.caelum.leilao.dominio.Usuario;
 import br.com.caelum.leilao.dominio.builder.CriadorDeLeilao;
@@ -41,8 +44,9 @@ public class AvaliadorTest {
 		
 		leiloeiro.avalia(leilao);
 		
-		assertEquals(maiorLance, leiloeiro.getMaiorLance(), 0.00001);
-		assertEquals(menorLance, leiloeiro.getMenorLance(), 0.00001);
+		// Utilizando o hamcrest
+		assertThat(leiloeiro.getMaiorLance(), equalTo(maiorLance));
+		assertThat(leiloeiro.getMenorLance(), equalTo(menorLance));
 
 	}
 	
@@ -138,10 +142,13 @@ public class AvaliadorTest {
 		
 		leiloeiro.avalia(leilao);
 		
-		assertEquals(3, leiloeiro.getTresMaiores().size());
-		assertEquals(999.0, leiloeiro.getTresMaiores().get(0).getValor(), 0.00001);
-		assertEquals(850.0, leiloeiro.getTresMaiores().get(1).getValor(), 0.00001);
-		assertEquals(800.0, leiloeiro.getTresMaiores().get(2).getValor(), 0.00001);
+		// utilizando hamcrest para comparar coleções
+		assertThat(leiloeiro.getTresMaiores().size(), equalTo(3));
+		assertThat(leiloeiro.getTresMaiores(), hasItems(
+				new Lance(rafael, 999.0),
+				new Lance(carlos, 850.0),
+				new Lance(carlos, 800.0)
+		));
 	}
 	
 	@Test
